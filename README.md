@@ -48,20 +48,27 @@ ielts-tools/
 │   ├── srs.js                # 艾宾浩斯 SRS 算法
 │   ├── stats.js               # 错题归因标签 + 统计
 │   ├── i18n.js                 # 洞察部分中英切换
-│   └── mastery.js             # 技巧掌握度计算
+│   ├── mastery.js             # 技巧掌握度计算
+│   └── glossary.js             # 划词翻译 + 生词本
 ├── SPEC.md                   # 完整产品规格（给 Claude Code 的上下文）
 └── README.md
 ```
 
 **加内容原则**：只改 `content/*.js`，不动其他文件。
 
-## 已有内容（Stage 1 · Foundation）
+## 已有内容
 
-- **阅读技巧**：True/False/Not Given 三分法 · Matching Headings 段落主旨定位（全英文，含中英切换洞察）
+**Stage 1 · Foundation**
+- **阅读技巧**：True/False/Not Given 三分法 · Matching Headings 段落主旨定位（全英文，含中英切换洞察，题目难度对标雅思 7+）
 - **完整的 SRS 复习循环**（6 级间隔：1/2/4/8/16/32 天）
 - **错题归因标签**：答错弹标签选择器，Progress 页看最近 7 天的错题分布
 - **Streak、XP、掌握度可视化**
-- 生词模块（划词翻译 + 生词本）已移除，Stage 2 重做
+- **技巧自选**：Today 页是技巧选择器，不再是"每天固定学一课"
+
+**Stage 2 · Core Learning Loop（进行中）**
+- **划词翻译**：点击文章/讲解里任意英文单词 → 弹卡片（内置 15 词高频词典 + Free Dictionary API 兜底），一键加入生词本
+- **生词本**：加入的生词进 SRS 循环，Library 页可浏览全部已存单词
+- 听力模块（3a/3b/3d）尚未开始
 
 ## 加内容
 
@@ -97,9 +104,9 @@ ID 保持唯一即可，其余是数据。错题归因标签在 `modules/stats.j
 
 按 SPEC.md §4 的阶段划分：
 
-- [x] **Stage 1 · Foundation**：文件拆分、全英文界面、中英切换、错题归因标签
-- [ ] **Stage 2 · Core Learning Loop**：划词翻译 + 生词本、听力模块 3a/3b/3d
-- [ ] **Stage 3 · Advanced**：用户导入错题、每周错题回放、技巧熟练度槽、计时渐进、归因分布图
+- [x] **Stage 1 · Foundation**：文件拆分、全英文界面、中英切换、错题归因标签、技巧自选
+- [ ] **Stage 2 · Core Learning Loop**：划词翻译 + 生词本 ✓ 已上线 · 听力模块 3a/3b/3d 待做
+- [ ] **Stage 3 · Advanced**：用户导入错题、每周错题回放、技巧熟练度槽、计时渐进、归因分布图（目前是条形图，非饼图）
 - [ ] **Stage 4 · Later**：写作批改、听力模块 3c/3e、口语模块
 
 ## 技术栈

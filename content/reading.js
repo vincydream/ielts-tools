@@ -25,53 +25,53 @@ export const READING_LESSONS = [
     `,
     questions: [
       {
-        context: '<span class="highlight">Recent studies suggest that some species of octopus display problem-solving abilities</span> comparable to those of certain mammals, particularly in tasks involving spatial memory.',
-        prompt: 'All octopus species have problem-solving abilities equal to mammals.',
+        context: 'While correlation between rising sea-surface temperatures and coral bleaching events has been documented extensively since the 1980s, <span class="highlight">several researchers caution that temperature alone cannot account for the variability observed across reef systems</span>; localised factors such as water flow and pre-existing bacterial communities appear to modulate a reef\'s vulnerability considerably.',
+        prompt: 'Rising sea temperature is the only factor that determines whether a reef will bleach.',
         options: ['True', 'False', 'Not Given'],
         answer: 1,
         insight: {
-          en: 'The statement uses <span class="insight-tag">All</span> and <span class="insight-tag">equal</span>, but the passage says <span class="insight-tag">some species</span> and <span class="insight-tag">comparable</span>. The scope has been broadened and the degree made absolute — that contradicts the passage, making this FALSE, not NG.',
-          zh: '陈述用了 <span class="insight-tag">All</span> 和 <span class="insight-tag">equal</span>，但原文是 <span class="insight-tag">some species</span> 和 <span class="insight-tag">comparable</span>。范围被放大 + 程度被绝对化 = 与原文矛盾，是 FALSE，不是 NG。'
+          en: 'The passage explicitly states that "temperature alone cannot account for the variability" — that directly rules out the claim that temperature is the only factor. Don\'t be thrown by the hedging phrase "several researchers caution": the substantive point is that other factors (water flow, bacterial communities) also matter. FALSE, not NG, because the passage takes a clear position.',
+          zh: '原文明确说"温度本身无法解释差异性"——直接否定了"温度是唯一因素"的说法。看到"several researchers caution"这类缓冲语气时不要被绕进去，实质内容是：水流、细菌群落等其他因素也起作用。这是 FALSE，不是 NG，因为原文表达了明确立场。'
         }
       },
       {
-        context: '<span class="highlight">The city\'s public transport network expanded rapidly between 2010 and 2015</span>, though the pace of new construction has since slowed considerably.',
-        prompt: 'Public transport construction in the city stopped after 2015.',
+        context: 'Historians have traditionally argued that the collapse of the trade network in the region followed directly from a prolonged drought that decimated agricultural yields. However, <span class="highlight">recent tree-ring analysis indicates that the drought began only after trade routes had already been disrupted by political fragmentation</span>, suggesting that economic collapse may have exacerbated, rather than resulted from, environmental stress.',
+        prompt: 'The drought caused the trade network to collapse.',
         options: ['True', 'False', 'Not Given'],
         answer: 1,
         insight: {
-          en: '"slowed considerably" means the pace eased, not that it ended. <span class="insight-tag">stopped</span> is an extreme rewrite that contradicts the passage — choose FALSE. Distinguishing "slowing down" from "stopping" is a classic trap.',
-          zh: '"slowed considerably" 是"放缓"，不是"停止"。<span class="insight-tag">stopped</span> 是极端化改写，与原文矛盾，选 FALSE。区分"减慢"和"停止"是常见考点。'
+          en: 'This is a reversed-causality trap. The "traditional" view (drought → collapse) is exactly what the statement claims, but the passage\'s newer evidence flips the sequence: political fragmentation disrupted trade first, and the drought came after — possibly even worsened by the collapse, not the other way round. Whenever a passage contrasts "traditionally believed X" with "however, recent evidence suggests Y", the statement matching the old view is almost always the trap.',
+          zh: '这是因果颠倒陷阱。"传统观点"（干旱→贸易崩溃）正是陈述所说的，但原文的新证据把顺序反过来了：政治分裂先扰乱了贸易，干旱是后来才出现的——甚至可能是经济崩溃加剧了环境压力，而非反过来。凡是原文用"传统上认为 X，但是最新证据显示 Y"这种结构时，符合"传统观点"的陈述几乎都是陷阱。'
         }
       },
       {
-        context: '<span class="highlight">Dr. Chen\'s research on urban wildlife has been widely cited</span> in policy discussions about green space allocation.',
-        prompt: "Dr. Chen's research is the most influential work in the field.",
+        context: 'A 2019 survey found that nearly two-thirds of first-year university students in the sample reported feeling unprepared for independent study, <span class="highlight">a figure that had risen only marginally since a comparable survey conducted a decade earlier</span>.',
+        prompt: 'The proportion of students feeling unprepared for independent study has more than doubled over the past decade.',
+        options: ['True', 'False', 'Not Given'],
+        answer: 1,
+        insight: {
+          en: 'The passage says the figure "rose only marginally" — a small increase. "More than doubled" is a huge exaggeration of that. Whenever a statement gives a specific multiplier or percentage ("doubled", "tripled", "50% more"), check whether the passage actually gives a matching figure — here it deliberately doesn\'t, it just qualifies the change as marginal.',
+          zh: '原文说这个数字"只是略微上升"——涨幅很小。"翻了不止一倍"是对此的严重夸大。任何时候陈述给出具体倍数或百分比（"翻倍"、"增加三倍"、"多 50%"），回头检查原文是否有对应数字——这里原文刻意没给具体数字，只说变化"轻微"。'
+        }
+      },
+      {
+        context: 'Although the study\'s authors acknowledge that sample size limits the generalisability of their conclusions, <span class="highlight">they maintain that the observed pattern — an increase in self-reported anxiety correlating with increased social media use among the surveyed cohort — warrants further investigation using larger, more representative samples</span>.',
+        prompt: 'The study proves that social media use causes anxiety.',
+        options: ['True', 'False', 'Not Given'],
+        answer: 1,
+        insight: {
+          en: 'The passage only claims a correlation and explicitly limits its own conclusions ("sample size limits generalisability... warrants further investigation"). "Proves...causes" claims both certainty and causation — the opposite of how the authors describe their own study. This is FALSE, not NG, because the passage actively pushes back against a claim this strong.',
+          zh: '原文只说是"相关性"，并且明确限定了自己的结论（"样本量限制了普适性……有待进一步研究"）。"证明……导致"既声称确定性又声称因果关系——恰恰和作者对自己研究的定性相反。这是 FALSE，不是 NG，因为原文主动否定了这种强度的说法。'
+        }
+      },
+      {
+        context: '<span class="highlight">The revised curriculum introduces mandatory statistics modules for all first-year humanities students, a change the department attributes to growing demand from employers for quantitatively literate graduates.</span>',
+        prompt: 'Employers were consulted directly before the curriculum was revised.',
         options: ['True', 'False', 'Not Given'],
         answer: 2,
         insight: {
-          en: '"widely cited" only says the work is frequently referenced. <span class="insight-tag">most influential</span> is a superlative ranking claim — the passage never makes that comparison, so this is NG, not TRUE. Don\'t fill in the gap yourself.',
-          zh: '"widely cited" 只说被广泛引用，<span class="insight-tag">most influential</span> 是最高级排序——原文没有做过这个比较，是 NG 而不是 TRUE。别脑补。'
-        }
-      },
-      {
-        context: '<span class="highlight">Although initial trials showed promising results, subsequent large-scale studies failed to replicate the effect</span>, leading many researchers to question the original findings.',
-        prompt: 'The initial results of the trials could not be reproduced in later studies.',
-        options: ['True', 'False', 'Not Given'],
-        answer: 0,
-        insight: {
-          en: '"failed to replicate" = "could not be reproduced" — a textbook paraphrase. This is what TRUE looks like: not high word overlap, but <span class="insight-tag">logical equivalence</span>.',
-          zh: '"failed to replicate" = "could not be reproduced"，标准同义改写。这就是 TRUE 的样子——不是词汇重合度高，而是<span class="insight-tag">逻辑等价</span>。'
-        }
-      },
-      {
-        context: '<span class="highlight">The museum introduced free entry on weekends in 2019</span>, resulting in a noticeable increase in family visitors.',
-        prompt: 'Weekend visitor numbers doubled after 2019.',
-        options: ['True', 'False', 'Not Given'],
-        answer: 2,
-        insight: {
-          en: 'The passage only says <span class="insight-tag">noticeable increase</span> — it never says "doubled". When no specific figure is given, that\'s NG. Whenever a statement gives a number or ratio, check the passage for a matching figure first.',
-          zh: '原文只说 <span class="insight-tag">noticeable increase</span>（明显增加），没有说"翻倍"。<span class="insight-tag">具体数字</span>没有给就是 NG。任何时候出现具体数字/比例，先在原文找有没有对应数字。'
+          en: 'The passage says the change is "attributed to" employer demand — that\'s the department\'s stated reason, not evidence of a consultation process. "Attributed to X" tells you the motivation; it says nothing about how that information was gathered. Don\'t upgrade a stated reason into a described process — that\'s exactly the kind of over-inference NOT GIVEN is built to catch.',
+          zh: '原文说这项改变"归因于"雇主需求——这是院系给出的理由，不代表存在一个"咨询"的过程。"归因于 X"告诉你的是动机，不代表这个信息是怎么收集来的。不要把"陈述的理由"升级成"具体的过程描述"——这正是 NOT GIVEN 要抓的那种过度推理。'
         }
       }
     ]
@@ -100,48 +100,48 @@ export const READING_LESSONS = [
     `,
     questions: [
       {
-        context: '<span class="highlight">The invention of the printing press in the 15th century did not immediately transform European society.</span> For decades, printed books remained expensive luxuries accessible only to the wealthy. It was not until the late 16th century, when production costs fell dramatically, that literacy began to spread among the middle classes, gradually reshaping education, commerce, and religious practice.',
+        context: 'Public debate around automation has tended to polarise around two extremes: those who foresee mass unemployment as machines replace human labour wholesale, and those who insist that new jobs will simply emerge to replace the old, as they have during every previous wave of technological change. <span class="highlight">Both positions, however, understate the extent to which the transition itself — rather than its eventual equilibrium — produces prolonged and unevenly distributed hardship</span>, concentrated among workers whose skills are least transferable.',
         prompt: 'Choose the heading that best fits this paragraph:',
         options: [
-          'The technological breakthrough of the printing press',
-          'A delayed but transformative impact',
-          'The cost of early printed books',
-          'How printing changed religion'
+          'Two opposing predictions about automation',
+          'The uneven cost of transition, not just the endpoint',
+          'Why new jobs always replace old ones',
+          'Which workers are most affected by automation'
         ],
         answer: 1,
         insight: {
-          en: 'The first sentence signals <span class="insight-tag">"did not immediately transform"</span> — a delay; the last sentence signals <span class="insight-tag">"gradually reshaping"</span> — an eventual transformation. Together that\'s "a delayed but transformative impact." Options C and D are details within the paragraph, not its main idea.',
-          zh: '首句抓的是<span class="insight-tag">"did not immediately transform"</span>——延迟；末句抓<span class="insight-tag">"gradually reshaping"</span>——最终带来变革。合起来就是"延迟但深远的影响"。选项 C 和 D 是段中细节，不是主旨。'
+          en: 'The paragraph sets up two opposing camps (A) only to knock both down with "however" — the real point is the clause after it: the transition itself causes uneven hardship, not the debate about the endpoint. B is the only option that captures this pivot. A describes the setup, not the paragraph\'s actual argument; D is a specific detail buried in the last clause, not the main idea.',
+          zh: '这段先摆出两种对立观点（A），然后用"however"把两者都推翻——真正的论点在后面那句：转型过程本身造成了不均衡的痛苦，而不是关于终点的争论。B 是唯一抓住这个转折的选项。A 只是背景铺垫，不是本段真正论点；D 只是最后一句里的一个具体细节，不是主旨。'
         }
       },
       {
-        context: '<span class="highlight">Coral reefs face threats from multiple directions</span>. Rising sea temperatures cause bleaching. Ocean acidification weakens reef structures. Coastal development introduces sediment and pollutants. Overfishing removes species that keep algae in check. No single factor can be blamed—<span class="highlight">reefs are declining because of the combined pressure of many stressors</span>.',
+        context: 'It would be a mistake to assume that the decline in bee populations is attributable solely to pesticide use, however central that factor has become in public discourse. Habitat fragmentation has reduced the diversity of forage available across a season, while the spread of the Varroa mite has introduced a pathogen vector largely absent a century ago. <span class="highlight">Each factor alone might be manageable; it is their convergence that has pushed many colonies past a critical threshold.</span>',
         prompt: 'Choose the heading that best fits this paragraph:',
         options: [
-          'The impact of rising temperatures',
-          'Why overfishing damages reefs',
-          'The compound nature of reef decline',
-          'Coral bleaching explained'
+          'The central role of pesticides in bee decline',
+          'Habitat fragmentation as an overlooked cause',
+          'Why convergence, not any single cause, explains the crisis',
+          'The spread of the Varroa mite'
         ],
         answer: 2,
         insight: {
-          en: 'Both the first and last sentences point to <span class="insight-tag">"multiple"</span> and <span class="insight-tag">"combined pressure"</span> — the core idea is "many stressors compounding together." A, B, and D are all specific examples inside the paragraph covering only one angle each — none of them summarize the whole paragraph. This is the classic Matching Headings trap: <span class="insight-tag">detail ≠ main idea</span>.',
-          zh: '首末句都在讲<span class="insight-tag">"multiple"</span> 和 <span class="insight-tag">"combined pressure"</span>——核心是"多重因素叠加"。A、B、D 都是段落里的具体例子，只覆盖一个方面，不能概括整段。这就是 Matching Headings 的经典陷阱：<span class="insight-tag">细节 ≠ 主旨</span>。'
+          en: 'The paragraph opens by warning against blaming pesticides alone, lists two more contributing factors, and closes with the real claim: "it is their convergence" that matters, not any one factor in isolation. C is the only heading broad enough to cover all three factors plus the paragraph\'s actual point about their combination. A, B, and D each name only one of the three factors mentioned — each is a detail, not the whole picture.',
+          zh: '这段开头就提醒不要只怪杀虫剂，接着列出另外两个因素，最后给出真正论点："是它们的叠加"起了决定作用，而不是任何单一因素。C 是唯一能覆盖全部三个因素、并抓住"叠加"这个论点的标题。A、B、D 各自只点名了三个因素里的一个——都是细节，不是全貌。'
         }
       },
       {
-        context: 'Early attempts at machine translation in the 1950s produced results that were often comically inaccurate. <span class="highlight">Progress remained slow for nearly forty years, as researchers struggled to encode the complexity of human language into rules.</span> The breakthrough came only when the field abandoned rule-based approaches in favor of statistical methods trained on vast collections of human-translated text.',
+        context: 'The prevailing account of the manuscript\'s origin — that it was produced in a single scriptorium over a period of months — has come under sustained scrutiny. Variations in vellum quality between sections, together with at least three distinguishable hands in the marginalia, point instead to a process of compilation stretching over decades, possibly across more than one religious house. <span class="highlight">What was once read as a unified work may in fact be a composite assembled long after its earliest passages were first set down.</span>',
         prompt: 'Choose the heading that best fits this paragraph:',
         options: [
-          'Early failures in machine translation',
-          'A shift in methodology after decades of stagnation',
-          'How statistical methods work',
-          'The problem of encoding grammar'
+          'Evidence against a single-scriptorium origin',
+          'Differences in vellum quality across the manuscript',
+          'Identifying the number of scribes involved',
+          'A composite work assembled across decades, not a unified original'
         ],
-        answer: 1,
+        answer: 3,
         insight: {
-          en: 'This paragraph has a clear three-part structure: <span class="insight-tag">early failure → decades of stagnation → a methodological shift that brought a breakthrough</span>. Option B captures all three stages. A only covers the first stage; C and D are details from the final sentence.',
-          zh: '这段有清晰的三段结构：<span class="insight-tag">早期失败 → 长期停滞 → 方法转变带来突破</span>。B 抓住了全部三个阶段。A 只讲第一阶段，C、D 是最后一句的细节。'
+          en: 'The paragraph builds evidence (vellum variation, multiple hands) toward one conclusion, stated in the final sentence: this isn\'t a unified work at all, but a composite assembled over a long period. D captures that final, overall claim. A is close but only describes the "against" half — it doesn\'t capture what the evidence points toward. B and C are individual pieces of evidence, not the conclusion they support.',
+          zh: '这段逐步列出证据（羊皮纸质量差异、多种笔迹），最后一句给出结论：这根本不是一部统一的作品，而是长期拼合而成的复合文本。D 抓住了这个最终的整体论点。A 很接近，但只讲了"反对"的那一半，没有讲证据指向了什么结论。B、C 只是具体证据，不是证据支持的结论。'
         }
       }
     ]

@@ -2,6 +2,7 @@ import { todayStr, daysBetween, scheduleItem, getDueItems } from './modules/srs.
 import { ERROR_TAGS, recordErrorTag, weeklyErrorDistribution, tagLabel } from './modules/stats.js';
 import { getLang, toggleLang, insightText } from './modules/i18n.js';
 import { updateLessonMastery } from './modules/mastery.js';
+import { wrapWordsForClick, getDefinition, isInGlossary, addToGlossary } from './modules/glossary.js';
 import { READING_LESSONS } from './content/reading.js';
 import { LISTENING_LESSONS } from './content/listening.js';
 
@@ -150,6 +151,59 @@ function showErrorTagModal(section, onDone) {
 }
 
 /* =============================================================
+   CLICK-TO-TRANSLATE — click any word in a passage/lesson body
+   (SPEC §8, option C: built-in dict + Free Dictionary API fallback)
+   ============================================================= */
+function showWordModal(word, contextSentence) {
+  const back = document.createElement('div');
+  back.className = 'modal-back';
+  back.innerHTML = `
+    <div class="modal" style="text-align:left;">
+      <div style="text-align:center;"><div class="modal-icon">📖</div></div>
+      <div id="word-modal-body" style="text-align:center; color:var(--text-dim);">Looking up "${word}"…</div>
+      <button class="begin-btn skip-btn" id="word-modal-close" style="margin-top:16px;">Close</button>
+    </div>
+  `;
+  document.body.appendChild(back);
+  back.querySelector('#word-modal-close').onclick = () => back.remove();
+  back.addEventListener('click', (e) => { if (e.target === back) back.remove(); });
+
+  getDefinition(word).then(entry => {
+    const already = isInGlossary(state, entry.word);
+    document.getElementById('word-modal-body').innerHTML = `
+      <div class="vocab-word">${entry.word}</div>
+      <div class="vocab-pos">${entry.pos || ''}</div>
+      <div class="vocab-def">${entry.def}</div>
+      ${entry.zh ? `<div style="color:var(--text-dim); margin-bottom:8px;">${entry.zh}</div>` : ''}
+      ${entry.synonyms && entry.synonyms.length ? `<div style="font-size:13px; color:var(--text-dim); margin-bottom:8px;">Synonyms: ${entry.synonyms.join(', ')}</div>` : ''}
+      ${entry.example ? `<div class="vocab-example">"${entry.example}"</div>` : ''}
+      <button class="begin-btn" id="add-glossary-btn" ${already ? 'disabled' : ''}>${already ? '✓ In your glossary' : '+ Add to Glossary'}</button>
+    `;
+    const addBtn = document.getElementById('add-glossary-btn');
+    if (!already) {
+      addBtn.onclick = () => {
+        addToGlossary(state, { word: entry.word, def: entry.def, zh: entry.zh, addedFrom: 'reading', addedAt: todayStr(), context: contextSentence });
+        scheduleItem(state, 'v:' + entry.word, 2, { type: 'vocab' });
+        saveState();
+        addBtn.disabled = true;
+        addBtn.textContent = '✓ Added';
+      };
+    }
+  });
+}
+
+function initWordClickDelegation() {
+  $view.addEventListener('click', (e) => {
+    const wordEl = e.target.closest('.word');
+    if (!wordEl) return;
+    const word = wordEl.textContent.trim();
+    if (!word) return;
+    const sentence = wordEl.closest('.q-context, .lesson-body')?.textContent?.trim().slice(0, 200) || '';
+    showWordModal(word, sentence);
+  });
+}
+
+/* =============================================================
    SHARED QUESTION FEEDBACK (used by both lesson practice + review)
    ============================================================= */
 function renderFeedback(q, correct, onNext) {
@@ -196,42 +250,65 @@ function gradeAnswer(chosen, q, itemId, section, onGraded) {
   else showErrorTagModal(section, finish);
 }
 
-/* --- VIEW: TODAY --- */
-function pickTodayLesson() {
-  const today = todayStr();
-  if (state.todayLessonId && state.history[today]) return state.todayLessonId;
-  const next = LESSONS.find(l => !state.completedLessons.includes(l.id));
-  if (next) {
-    state.todayLessonId = next.id;
-    saveState();
-    return next.id;
-  }
-  return null;
+/* --- VIEW: TODAY (technique picker) --- */
+function renderToday() {
+  renderTechniquePicker();
 }
 
-function renderToday() {
-  const lessonId = pickTodayLesson();
-  if (!lessonId) {
-    $view.innerHTML = `
-      <div class="empty">
-        <div class="empty-icon">🎉</div>
-        <div class="empty-title">All seed lessons are in your review loop</div>
-        <div class="empty-sub">Switch to "Review" to keep going. New lessons land here as they're added.</div>
-      </div>`;
-    return;
-  }
-  const lesson = LESSONS.find(l => l.id === lessonId);
-  const done = state.completedLessons.includes(lessonId);
-
+function renderTechniquePicker() {
+  const bySection = {};
+  LESSONS.forEach(l => {
+    (bySection[l.section] = bySection[l.section] || []).push(l);
+  });
+  const sections = Object.entries(bySection);
   $view.innerHTML = `
     <div class="card">
-      <div class="card-title">${lesson.section} · Today's Lesson</div>
+      <div class="card-title">Choose a Technique</div>
+      <div class="card-heading">What do you want to practice today?</div>
+      <div class="card-sub">Pick any lesson — completed ones can be replayed anytime.</div>
+    </div>
+    ${sections.length === 0 ? '<div class="empty"><div class="empty-icon">🚧</div><div class="empty-title">No lessons yet</div></div>' :
+      sections.map(([section, lessons]) => `
+      <div class="card">
+        <div class="card-title">${section}</div>
+        ${lessons.map(l => `
+          <div class="mastery-item" style="cursor:pointer" data-lesson="${l.id}">
+            <div>
+              <div class="m-word">${l.title}</div>
+              <div style="font-size:12px; color:var(--text-dim); margin-top:2px;">${l.subtitle}</div>
+            </div>
+            <div class="mastery-level">${state.completedLessons.includes(l.id) ? '<span style="color:var(--success)">✓ Done</span>' : '<span style="color:var(--accent)">Start →</span>'}</div>
+          </div>
+        `).join('')}
+      </div>
+    `).join('')}
+  `;
+  document.querySelectorAll('[data-lesson]').forEach(el => {
+    el.onclick = () => openLesson(el.dataset.lesson);
+  });
+}
+
+function openLesson(lessonId) {
+  state.todayLessonId = lessonId;
+  saveState();
+  renderLessonDetail(lessonId);
+}
+
+function renderLessonDetail(lessonId) {
+  const lesson = LESSONS.find(l => l.id === lessonId);
+  const done = state.completedLessons.includes(lessonId);
+  $view.innerHTML = `
+    <button class="lang-toggle" id="back-to-picker" style="margin-bottom:14px;">← All techniques</button>
+    <div class="card">
+      <div class="card-title">${lesson.section} · Technique</div>
       <div class="card-heading">${lesson.title}</div>
       <div class="card-sub">${lesson.subtitle}</div>
       <div class="lesson-body">${lesson.body}</div>
       <button class="begin-btn" id="begin-btn">${done ? 'Practice Again →' : 'Start Practice →'}</button>
     </div>
   `;
+  wrapWordsForClick(document.querySelector('.lesson-body'));
+  document.getElementById('back-to-picker').onclick = renderTechniquePicker;
   document.getElementById('begin-btn').onclick = () => startLessonPractice(lesson);
 }
 
@@ -261,6 +338,7 @@ function renderQuestionCard() {
       <div id="feedback-slot"></div>
     </div>
   `;
+  wrapWordsForClick(document.querySelector('.q-context'));
   document.querySelectorAll('.q-opt').forEach(btn => {
     btn.onclick = () => {
       const itemId = 'q:' + sessionState.lessonId + ':' + sessionState.index;
@@ -281,7 +359,6 @@ function finishLessonSession() {
     state.completedLessons.push(lesson.id);
   }
   updateLessonMastery(state, lesson, true);
-  state.todayLessonId = null; // allow next lesson tomorrow
   saveState();
   const pct = Math.round(100 * sessionState.correct / sessionState.list.length);
   $view.innerHTML = `
@@ -323,7 +400,7 @@ function renderReviewCard() {
     `;
     return;
   }
-  // Only question items exist post-refactor (vocab review returns in Stage 2 via the glossary module).
+  if (id.startsWith('v:')) return renderVocabReviewCard(id);
   if (!id.startsWith('q:')) {
     sessionState.index += 1;
     return renderReviewCard();
@@ -348,6 +425,7 @@ function renderReviewCard() {
       <div id="feedback-slot"></div>
     </div>
   `;
+  wrapWordsForClick(document.querySelector('.q-context'));
   document.querySelectorAll('.q-opt').forEach(btn => {
     btn.onclick = () => {
       gradeAnswer(parseInt(btn.dataset.i), q, id, lesson.section, (correct) => {
@@ -358,6 +436,45 @@ function renderReviewCard() {
       });
     };
   });
+}
+
+function renderVocabReviewCard(id) {
+  const word = id.slice(2);
+  const entry = state.glossary.find(g => g.word === word);
+  if (!entry) {
+    sessionState.index += 1;
+    return renderReviewCard();
+  }
+  $view.innerHTML = `
+    <div class="card">
+      <div class="card-title">Review · Glossary · ${sessionState.index + 1} / ${sessionState.list.length}</div>
+      <div class="vocab-word">${entry.word}</div>
+      <div style="margin: 20px 0; color: var(--text-dim); font-size:14px;">Try to recall the meaning before revealing:</div>
+      <button class="begin-btn" id="reveal-btn">Reveal</button>
+      <div id="reveal-slot"></div>
+    </div>
+  `;
+  document.getElementById('reveal-btn').onclick = () => {
+    document.getElementById('reveal-btn').style.display = 'none';
+    document.getElementById('reveal-slot').innerHTML = `
+      <div class="vocab-def" style="margin-top:20px">${entry.def}</div>
+      ${entry.zh ? `<div style="color:var(--text-dim); margin-bottom:12px;">${entry.zh}</div>` : ''}
+      <div style="font-size:13px; color:var(--text-dim); margin-top:16px;">Did you recall it correctly?</div>
+      <div class="rating">
+        <button class="r-forgot" data-r="0">Forgot<span class="interval">tomorrow</span></button>
+        <button class="r-hard" data-r="1">Sort of<span class="interval">same interval</span></button>
+        <button class="r-good" data-r="2">Nailed it<span class="interval">longer interval</span></button>
+      </div>
+    `;
+    document.querySelectorAll('.rating button').forEach(b => {
+      b.onclick = () => {
+        scheduleItem(state, id, parseInt(b.dataset.r), { type: 'vocab' });
+        saveState();
+        sessionState.index += 1;
+        renderReviewCard();
+      };
+    });
+  };
 }
 
 /* --- VIEW: LIBRARY --- */
@@ -378,13 +495,26 @@ function renderLibrary() {
         </div>
       `).join('')}
     </div>
+    <div class="card">
+      <div class="card-title">My Glossary</div>
+      <div class="card-heading">${state.glossary.length} word(s) saved</div>
+      <div class="card-sub">Click any word in a passage or lesson to look it up and save it here.</div>
+      ${state.glossary.length === 0 ? '<div style="color:var(--text-dim); font-size:14px;">Nothing saved yet.</div>' :
+        state.glossary.slice().reverse().map(g => `
+          <div class="mastery-item">
+            <div>
+              <div class="m-word">${g.word}</div>
+              <div style="font-size:12px; color:var(--text-dim); margin-top:2px;">${g.def}${g.zh ? ' · ' + g.zh : ''}</div>
+            </div>
+          </div>
+        `).join('')}
+    </div>
   `;
   document.querySelectorAll('[data-lesson]').forEach(el => {
     el.onclick = () => {
-      const lesson = LESSONS.find(l => l.id === el.dataset.lesson);
-      state.todayLessonId = lesson.id;
-      saveState();
-      switchView('today');
+      document.querySelectorAll('.nav button').forEach(b => b.classList.toggle('active', b.dataset.view === 'today'));
+      currentView = 'today';
+      openLesson(el.dataset.lesson);
     };
   });
 }
@@ -477,4 +607,5 @@ window.switchView = switchView;
 state = loadState();
 updateStreak();
 updateStats();
+initWordClickDelegation();
 switchView('today');

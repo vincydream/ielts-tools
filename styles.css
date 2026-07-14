@@ -207,6 +207,17 @@ body {
   color: var(--accent);
   font-weight: 500;
 }
+
+/* --- CLICK-TO-TRANSLATE WORDS --- */
+.word {
+  cursor: pointer;
+  border-bottom: 1px dotted var(--text-dimmer);
+  transition: all 0.15s;
+}
+.word:hover {
+  border-bottom-color: var(--accent);
+  color: var(--accent);
+}
 .q-prompt {
   font-size: 15px;
   font-weight: 500;
@@ -327,6 +338,33 @@ body {
   color: var(--text-dimmer);
   margin-top: 3px;
   font-weight: 400;
+}
+
+/* --- VOCAB / GLOSSARY CARD --- */
+.vocab-word {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+.vocab-pos {
+  color: var(--text-dim);
+  font-size: 13px;
+  font-style: italic;
+  margin-bottom: 12px;
+}
+.vocab-def {
+  font-size: 15px;
+  margin-bottom: 8px;
+}
+.vocab-example {
+  font-size: 14px;
+  color: var(--text-dim);
+  font-style: italic;
+  padding: 10px 14px;
+  background: var(--surface-2);
+  border-radius: 8px;
+  margin-bottom: 16px;
 }
 
 /* --- PROGRESS BAR --- */
