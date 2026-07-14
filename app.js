@@ -170,19 +170,30 @@ function showWordModal(word, contextSentence) {
 
   getDefinition(word).then(entry => {
     const already = isInGlossary(state, entry.word);
+    const meaningsHtml = entry.meanings.length === 0
+      ? `<div style="color:var(--text-dim); font-size:14px; text-align:center; padding:12px 0;">${entry.error || 'No definition found.'}</div>`
+      : entry.meanings.map((m, i) => `
+          <div class="meaning-block${i > 0 ? ' meaning-block--sep' : ''}">
+            <div class="meaning-pos">${m.pos || 'entry'}</div>
+            <div class="meaning-def">${m.def}</div>
+            ${m.synonyms && m.synonyms.length ? `<div class="meaning-syn">Synonyms: ${m.synonyms.join(', ')}</div>` : ''}
+            ${m.example ? `<div class="meaning-ex">"${m.example}"</div>` : ''}
+          </div>
+        `).join('');
     document.getElementById('word-modal-body').innerHTML = `
-      <div class="vocab-word">${entry.word}</div>
-      <div class="vocab-pos">${entry.pos || ''}</div>
-      <div class="vocab-def">${entry.def}</div>
-      ${entry.zh ? `<div style="color:var(--text-dim); margin-bottom:8px;">${entry.zh}</div>` : ''}
-      ${entry.synonyms && entry.synonyms.length ? `<div style="font-size:13px; color:var(--text-dim); margin-bottom:8px;">Synonyms: ${entry.synonyms.join(', ')}</div>` : ''}
-      ${entry.example ? `<div class="vocab-example">"${entry.example}"</div>` : ''}
-      <button class="begin-btn" id="add-glossary-btn" ${already ? 'disabled' : ''}>${already ? '✓ In your glossary' : '+ Add to Glossary'}</button>
+      <div style="text-align:center;">
+        <div class="vocab-word">${entry.word}</div>
+        ${entry.zh ? `<div style="color:var(--accent); font-size:14px; margin-bottom:12px;">${entry.zh}</div>` : ''}
+      </div>
+      <div class="meaning-list">${meaningsHtml}</div>
+      <button class="begin-btn" id="add-glossary-btn" style="margin-top:16px;" ${already || entry.meanings.length === 0 ? 'disabled' : ''}>${already ? '✓ In your glossary' : entry.meanings.length === 0 ? 'Nothing to add' : '+ Add to Glossary'}</button>
     `;
     const addBtn = document.getElementById('add-glossary-btn');
-    if (!already) {
+    if (!already && entry.meanings.length > 0) {
       addBtn.onclick = () => {
-        addToGlossary(state, { word: entry.word, def: entry.def, zh: entry.zh, addedFrom: 'reading', addedAt: todayStr(), context: contextSentence });
+        const primary = entry.meanings[0];
+        const defLine = (primary.pos ? '(' + primary.pos + ') ' : '') + primary.def;
+        addToGlossary(state, { word: entry.word, def: defLine, zh: entry.zh, addedFrom: 'reading', addedAt: todayStr(), context: contextSentence });
         scheduleItem(state, 'v:' + entry.word, 2, { type: 'vocab' });
         saveState();
         addBtn.disabled = true;

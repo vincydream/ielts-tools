@@ -45,27 +45,42 @@ export function wrapWordsForClick(root) {
   });
 }
 
+/* Normalize any dictionary entry (built-in or API) into { word, zh, meanings[] }.
+   meanings are ranked with the word's primary POS first. Heuristic: the POS
+   with the most sub-definitions in the API response is treated as most central
+   to the word's everyday usage. This fixes cases like "between", where the API
+   returns [noun (rare needle sense), preposition (main), adverb] and we'd
+   previously show the needle. */
 export async function getDefinition(rawWord) {
   const word = rawWord.toLowerCase().replace(/[^a-z']/g, '');
-  if (BUILTIN_DICT[word]) return { source: 'local', word, ...BUILTIN_DICT[word] };
+  if (BUILTIN_DICT[word]) {
+    const e = BUILTIN_DICT[word];
+    return {
+      source: 'local',
+      word,
+      zh: e.zh,
+      meanings: [{ pos: e.pos || '', def: e.def, example: e.example || '', synonyms: e.synonyms || [] }]
+    };
+  }
   try {
     const res = await fetch('https://api.dictionaryapi.dev/api/v2/entries/en/' + encodeURIComponent(word));
     if (!res.ok) throw new Error('not found');
     const data = await res.json();
-    const meaning = data[0]?.meanings?.[0];
-    const definition = meaning?.definitions?.[0];
-    const synonyms = (definition?.synonyms?.length ? definition.synonyms : meaning?.synonyms || []).slice(0, 3);
-    return {
-      source: 'api',
-      word,
-      pos: meaning?.partOfSpeech ? meaning.partOfSpeech + '.' : '',
-      def: definition?.definition || 'No definition found.',
-      zh: null,
-      synonyms,
-      example: definition?.example || ''
-    };
+    const rawMeanings = (data[0]?.meanings || []).slice();
+    rawMeanings.sort((a, b) => (b.definitions?.length || 0) - (a.definitions?.length || 0));
+    const meanings = rawMeanings.slice(0, 3).map(m => {
+      const d = m.definitions?.[0];
+      const syns = (d?.synonyms?.length ? d.synonyms : m.synonyms || []).slice(0, 3);
+      return {
+        pos: m.partOfSpeech || '',
+        def: d?.definition || '',
+        example: d?.example || '',
+        synonyms: syns
+      };
+    }).filter(m => m.def);
+    return { source: 'api', word, zh: null, meanings };
   } catch (e) {
-    return { source: 'error', word, pos: '', def: 'Could not fetch a definition (offline, or not a recognized word).', zh: null, synonyms: [], example: '' };
+    return { source: 'error', word, zh: null, meanings: [], error: 'Could not fetch a definition (offline, or not a recognized word).' };
   }
 }
 

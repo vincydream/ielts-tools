@@ -367,6 +367,45 @@ body {
   margin-bottom: 16px;
 }
 
+/* --- WORD LOOKUP MEANINGS --- */
+.meaning-list {
+  margin-top: 8px;
+  text-align: left;
+}
+.meaning-block {
+  padding: 12px 0;
+}
+.meaning-block--sep {
+  border-top: 1px dashed rgba(255,255,255,0.08);
+}
+.meaning-pos {
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.meaning-def {
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.55;
+}
+.meaning-syn {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 6px;
+}
+.meaning-ex {
+  font-size: 13px;
+  color: var(--text-dim);
+  font-style: italic;
+  margin-top: 6px;
+  padding: 6px 10px;
+  background: var(--surface-2);
+  border-radius: 6px;
+}
+
 /* --- PROGRESS BAR --- */
 .progress {
   height: 6px;
