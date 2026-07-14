@@ -5,7 +5,8 @@
 一个技巧优先的雅思学习工具。核心不是"打卡"，而是让每一次答题的瞬间都有反馈——因为传统的"学完再奖励自己"这套对某些人（比如作者）没用。全英文界面，陷阱洞察支持中英切换。
 
 ![no dependencies](https://img.shields.io/badge/dependencies-0-brightgreen) ![no build](https://img.shields.io/badge/build-none-blue) ![storage](https://img.shields.io/badge/persistence-localStorage-yellow)
-##在线网址： https://vincydream.github.io/ielts-tools/
+##
+在线网址： https://vincydream.github.io/ielts-tools/
 
 ## 为什么做这个
 
